@@ -22,15 +22,46 @@ This project ran two parallel investigations in response to the same CFO questio
 
 ---
 
+## Foundation – MRR & Churn Rate (M2)
+
+Before either investigation, we locked down definitions and computed baseline metrics.
+
+**Definitions used throughout this project:**
+- **Active subscription:** status in `['active', 'paused', 'trial']` as of snapshot date
+- **Churned subscription:** `status = 'churned'`
+
+### Current MRR by Plan Tier
+
+![MRR by Plan Tier](figures/mrr_by_tier.png)
+
+Premium accounts drive the majority of revenue. The MRR concentration in the top tier means that each churned premium customer has an outsized impact on revenue.
+
+### Monthly Churn Rate Trend (Last 12 Months)
+
+![Monthly Churn Rate Trend](figures/monthly_churn_trend.png)
+
+Subscription churn and MRR churn move in lockstep — no evidence of high-value customers churning disproportionately. Churn is broadly stable in the 2–5% range with no accelerating trend.
+
+**Files:** [sql/02_foundation.sql](sql/02_foundation.sql) · [notebooks/02_foundation.ipynb](notebooks/02_foundation.ipynb)
+
+---
+
 ## Investigation 1 – Cohort Retention (M3)
 
 **Question:** Is churn getting worse over time, or is one bad cohort dragging the average?
 
 **Answer:** Neither. Retention is consistently strong across all 19 cohorts. The only universal pattern is a 10–15% churn spike at Month 3–4 — a product-experience problem, not a cohort-quality problem.
 
+### Cohort Retention Heatmap
+
 ![Cohort Retention Heatmap](figures/cohort_heatmap.png)
 
 *Rows = signup month cohort | Columns = months since signup | Values = % of original cohort still active*
+
+Key observations:
+- Month 1 retention is near-perfect (100%) across 18 of 19 cohorts — onboarding is working
+- The Month 3–4 cliff is consistent and universal — this is the engagement gap to close
+- Long-term retention flattens at ~85%+ after Month 4 — customers who survive are sticky
 
 **Files:** [sql/03a_cohort_retention.sql](sql/03a_cohort_retention.sql) · [notebooks/03a_cohort_retention.ipynb](notebooks/03a_cohort_retention.ipynb) · [findings/03a_cohort_retention.md](findings/03a_cohort_retention.md)
 
@@ -48,22 +79,13 @@ This project ran two parallel investigations in response to the same CFO questio
 | Collaboration events | Lower | Higher | **+62%** |
 | Data export events | Lower | Higher | **+58%** |
 
+### Churned vs. Retained: Feature Distribution Comparison
+
 ![Predictor Comparison](figures/predictor_comparison.png)
 
+The separation between churned and retained distributions is large enough to power a practical early-warning score — no ML required.
+
 **Files:** [notebooks/04b_predictors.ipynb](notebooks/04b_predictors.ipynb) · [findings/04b_predictors.md](findings/04b_predictors.md)
-
----
-
-## Foundation – MRR & Churn Rate (M2)
-
-Before either investigation, we locked down definitions and computed baseline metrics:
-
-- **Active subscription:** status in `['active', 'paused', 'trial']` as of snapshot date
-- **Churned subscription:** status = `'churned'`
-- **MRR:** ~$1.82 M total (Premium tier: $1.25 M)
-- **Monthly churn rate:** 2–5% range over the last 12 months
-
-**Files:** [sql/02_foundation.sql](sql/02_foundation.sql) · [notebooks/02_foundation.ipynb](notebooks/02_foundation.ipynb)
 
 ---
 
@@ -84,8 +106,10 @@ SaaS-Churn/
 │   ├── 04b_predictors.md          # M4 findings
 │   └── 05_synthesis.md            # Which investigation to act on first
 └── figures/
-    ├── cohort_heatmap.png
-    └── predictor_comparison.png
+    ├── mrr_by_tier.png            # MRR breakdown bar chart
+    ├── monthly_churn_trend.png    # 12-month churn rate trend
+    ├── cohort_heatmap.png         # Retention heatmap (M3)
+    └── predictor_comparison.png   # Churned vs retained (M4)
 ```
 
 ---
